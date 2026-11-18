@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connect Mobile Phone | QuantumShield</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+</head>
+<body>
+
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050811" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="brand-title">QUANTUM<span>SHIELD</span> WEB NFC PAIRING</div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/" class="nav-link">2FA Portal</a></li>
+      <li><a href="/admin" class="nav-link">SOC Dashboard</a></li>
+      <li><a href="/test-suite" class="nav-link">Security Test Battery</a></li>
+      <li><a href="/connect" class="nav-link active">📡 Web NFC</a></li>
+    </ul>
+  </header>
+
+  <main class="main-container" style="max-width: 900px;">
+    
+    <div class="card" style="text-align: center; padding: 2.5rem 2rem;">
+      <h2 style="font-family: var(--font-heading); font-size: 2rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem;">
+        Use on Mobile Browser with NTAG215 Web NFC
+      </h2>
+      <p style="color: var(--text-secondary); max-width: 650px; margin: 0 auto 2rem; font-size: 0.95rem;">
+        Connect your mobile browser to the server over WiFi to scan physical NTAG215 NFC smart cards.
+      </p>
+
+      <div style="display: flex; justify-content: center; align-items: center; gap: 3rem; flex-wrap: wrap; margin-bottom: 2.5rem;">
+        
+        <!-- QR Code Display Box -->
+        <div style="background: #ffffff; padding: 16px; border-radius: 20px; box-shadow: 0 0 40px rgba(0, 240, 255, 0.3); display: inline-block;">
+          <img src="/api/qr-code" alt="Scan to Open QuantumShield on Mobile" style="width: 220px; height: 220px; display: block;">
+        </div>
+
+        <!-- Connection Details -->
+        <div style="text-align: left; max-width: 360px;">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+            Mobile URL:
+          </div>
+          <div class="mono-box" style="margin: 0.4rem 0 1rem; font-size: 0.95rem; color: var(--accent-cyan);">
+            {{ mobile_url }}
+          </div>
+          
+          <div style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6;">
+            <strong>Hardware:</strong> NXP NTAG215 (Type 2 Tag)<br>
+            <strong>Browser:</strong> Google Chrome on Android (v89+)<br>
+            <strong>Protocol:</strong> W3C Web NFC API<br>
+            <strong>Security:</strong> Post-Quantum 2FA (Ring-LWE)
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Quick 3-Step Setup Instructions -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; text-align: left; border-top: 1px solid var(--border-subtle); padding-top: 2rem;">
+        
+        <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 1.25rem; border: 1px solid var(--border-subtle);">
+          <div style="font-family: var(--font-heading); font-weight: 700; color: var(--accent-cyan); font-size: 1.1rem; margin-bottom: 0.4rem;">
+            1. Connect to WiFi
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">
+            Ensure your Android smartphone is on the same local WiFi network as this computer.
+          </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 1.25rem; border: 1px solid var(--border-subtle);">
+          <div style="font-family: var(--font-heading); font-weight: 700; color: var(--accent-purple); font-size: 1.1rem; margin-bottom: 0.4rem;">
+            2. Scan & Accept SSL
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">
+            Scan the QR code with your phone camera. If prompted with a certificate warning (due to local self-signed TLS), tap <strong>Advanced &rarr; Proceed</strong>.
+          </p>
+        </div>
+
+        <div style="background: rgba(0,0,0,0.3); border-radius: var(--radius-md); padding: 1.25rem; border: 1px solid var(--border-subtle);">
+          <div style="font-family: var(--font-heading); font-weight: 700; color: var(--accent-emerald); font-size: 1.1rem; margin-bottom: 0.4rem;">
+            3. Tap NTAG215 Card
+          </div>
+          <p style="font-size: 0.8rem; color: var(--text-secondary);">
+            On Step 2, tap <strong>Scan Physical NTAG215 Card</strong> and hold your physical card to the back of your phone.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+</body>
+</html>

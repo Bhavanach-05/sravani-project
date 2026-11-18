@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QuantumShield | Post-Quantum 2FA Authentication Portal</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%200%22%20100%22%20100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <a href="/" class="brand">
+      <div class="brand-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#050811" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M12 8v4"/>
+          <path d="M12 16h.01"/>
+        </svg>
+      </div>
+      <div class="brand-title">QUANTUM<span>SHIELD</span></div>
+    </a>
+
+    <ul class="nav-links">
+      <li><a href="/" class="nav-link active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        2FA Portal
+      </a></li>
+      <li><a href="/admin" class="nav-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+        SOC Dashboard
+      </a></li>
+      <li><a href="/test-suite" class="nav-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+        Security Test Battery
+      </a></li>
+      <li><a href="/connect" class="nav-link" style="color:var(--accent-cyan); font-weight:700;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+        📡 Web NFC Pairing
+      </a></li>
+      <li>
+        <div class="status-badge">
+          <span class="status-dot"></span>
+          <span>NTAG215 READY</span>
+        </div>
+      </li>
+    </ul>
+  </header>
+
+  <!-- Main Content Layout -->
+  <main class="main-container">
+    <div class="dual-view-grid">
+      
+      <!-- LEFT COLUMN: 2FA Authentication Portal -->
+      <div class="auth-card-container">
+        <div class="card auth-main-card">
+          <div class="card-header-styled">
+            <h3 class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Quantum 2FA Authentication
+            </h3>
+            <span class="status-badge" style="background:rgba(16,185,129,0.1); color:var(--accent-emerald); border-color:rgba(16,185,129,0.3)">
+              <span class="status-dot"></span>
+              ACTIVE
+            </span>
+          </div>
+
+          <div class="auth-card-body">
+              
+              <!-- 2FA Progress Stepper -->
+              <div class="step-stepper">
+                <div class="stepper-node active" id="stepNode1">
+                  <div class="stepper-circle">1</div>
+                  <span class="stepper-label">Password</span>
+                </div>
+                <div class="stepper-node" id="stepNode2">
+                  <div class="stepper-circle">2</div>
+                  <span class="stepper-label">Smart Card</span>
+                </div>
+                <div class="stepper-node" id="stepNode3">
+                  <div class="stepper-circle">3</div>
+                  <span class="stepper-label">Ring-LWE</span>
+                </div>
+              </div>
+
+              <!-- STEP 1: PASSWORD FORM -->
+              <div id="step1Panel" class="auth-panel">
+                <div class="panel-header">
+                  <h2 class="panel-title">Factor 1: Verification</h2>
+                  <p class="panel-subtitle">Enter enterprise credentials to unlock smart card validation.</p>
+                </div>
+
+                <div id="step1Alert" style="display:none; margin-bottom:1rem;"></div>
+
+                <form id="passwordAuthForm">
+                  <div class="form-group">
+                    <label class="form-label" for="usernameInput">Username</label>
+                    <input type="text" id="usernameInput" class="form-control" placeholder="e.g. alice" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label" for="passwordInput">Master Password</label>
+                    <input type="password" id="passwordInput" class="form-control" placeholder="••••••••••••" required>
+                  </div>
+
+                  <button type="submit" class="btn btn-primary" id="btnSubmitStep1">
+                    <span>Verify Factor 1</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </button>
+                </form>
+
+                <!-- Quick Fill Controls -->
+                <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.5rem;">
+                  <span style="font-size:0.75rem; color:var(--text-muted); font-weight:600;">SIMULATION SHORTCUTS:</span>
+                  <div style="display:flex; gap:0.5rem;">
+                    <button type="button" class="btn btn-secondary" id="quickFillAlice" style="font-size:0.75rem; padding:0.4rem 0.6rem;">
+                      👤 Auto-fill Alice
+                    </button>
+                    <button type="button" class="btn btn-secondary" id="quickFillHoney" style="font-size:0.75rem; padding:0.4rem 0.6rem; color:var(--accent-amber)">
+                      🍯 Trip Honey Token
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-secondary" onclick="document.getElementById('registerModal').style.display='flex'" style="font-size:0.75rem; padding:0.4rem 0.6rem; margin-top:0.25rem;">
+                    ➕ Register New User
+                  </button>
+                </div>
+              </div>
+
+              <!-- STEP 2: SMART CARD & WANG-WANG FUZZY VERIFIER -->
+              <div id="step2Panel" class="auth-panel" style="display:none;">
+                <div class="panel-header">
+                  <h2 class="panel-title">Factor 2: Smart Card</h2>
+                  <p class="panel-subtitle">Hold card near phone reader. Validated via Wang-Wang Fuzzy Verifier.</p>
+                </div>
+
+                <div id="step2Alert" style="display:none; margin-bottom:1rem;"></div>
+
+                <!-- Virtual Smart Card Graphic -->
+                <div class="smart-card-simulator anim-float" id="smartCardGraphic">
+                  <div class="card-top">
+                    <div class="card-chip"></div>
+                    <div class="card-nfc-icon">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+                    </div>
+                  </div>
+                  <div class="card-uid-display" id="displayCardUid">NFC-ALIC-0001</div>
+                  <div class="card-holder">
+                    <div>
+                      <div class="holder-label">Card Holder</div>
+                      <div class="holder-name" id="displayCardHolder">ALICE</div>
+                    </div>
+                    <span class="card-status-pill card-status-active" id="displayCardStatus">ACTIVE</span>
+                  </div>
+                </div>
+
+                <!-- Sensor Noise Slider -->
+                <div class="slider-container">
+                  <div class="slider-header">
+                    <span style="font-weight:600; color:var(--text-secondary)">Sensor Noise Distortion:</span>
+                    <span id="noiseDisplayLabel" style="font-weight:700; color:var(--accent-emerald)">0 bits (Exact Reading)</span>
+                  </div>
+                  <input type="range" min="0" max="4" value="0" class="range-slider" id="noiseSlider">
+                  <div style="display:flex; justify-content:space-between; font-size:0.65rem; color:var(--text-muted); margin-top:4px;">
+                    <span>0 bits</span>
+                    <span>1 bit (auto-correct)</span>
+                    <span>2 bits (&tau; max)</span>
+                    <span>3+ bits (SCAD reject)</span>
+                  </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="tapCardBtn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+                  <span>Tap Contactless Card</span>
+                </button>
+              </div>
+
+              <!-- STEP 3: RING-LWE POST-QUANTUM CHALLENGE-RESPONSE -->
+              <div id="step3Panel" class="auth-panel" style="display:none;">
+                <div class="panel-header">
+                  <h2 class="panel-title">Factor 3: Post-Quantum</h2>
+                  <p class="panel-subtitle">Ring-LWE challenge-response in polynomial ring &Zopf;<sub>3329</sub>[x]/(x<sup>256</sup> + 1).</p>
+                </div>
+
+                <div id="step3Alert" style="display:none; margin-bottom:1rem;"></div>
+
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:0.75rem;">
+                  <span style="color:var(--accent-cyan); font-weight:600;">SERVER CHALLENGE POLYNOMIAL u(x):</span>
+                  <div class="lattice-spectrum" id="serverChallengeSpectrum"></div>
+                  <div id="rlweChallengeStatus" style="font-family:var(--font-mono); font-size:0.7rem; color:var(--text-secondary)">Awaiting challenge...</div>
+                </div>
+
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-bottom:1rem;">
+                  <span style="color:var(--accent-purple); font-weight:600;">CLIENT RESPONSE PROJECTION v(x):</span>
+                  <div class="lattice-spectrum" id="clientResponseSpectrum"></div>
+                </div>
+
+                <button type="button" class="btn btn-primary" id="executeRLWEBtn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  <span>Compute & Verify Ring-LWE Lattice</span>
+                </button>
+              </div>
+
+              <!-- STEP 4: AUTHENTICATED QUANTUM SESSION -->
+              <div id="sessionPanel" class="auth-panel" style="display:none; text-align:center;">
+                <div style="width:54px; height:54px; background:rgba(16, 185, 129, 0.2); border:2px solid var(--accent-emerald); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; box-shadow:0 0 20px var(--accent-emerald-glow);">
+                  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <h2 class="panel-title" style="color:var(--accent-emerald)">Authenticated</h2>
+                <p class="panel-subtitle" style="margin-bottom:1.5rem">Post-Quantum Protected Session Established</p>
+
+                <div style="background:rgba(0,0,0,0.4); border-radius:var(--radius-md); padding:1rem; text-align:left; margin-bottom:1.5rem; font-size:0.8rem; font-family:var(--font-mono); line-height:1.8;">
+                  <div><strong>Account:</strong> <span id="sessionUsername" style="color:var(--accent-cyan)">alice</span></div>
+                  <div><strong>Session ID:</strong> #<span id="sessionUserId">1</span></div>
+                  <div><strong>Quantum Key Hash:</strong> <span id="sessionKeyFp" style="color:var(--accent-purple)">--</span></div>
+                  <div><strong>Auto-Revoke In:</strong> <span id="sessionTimerDisplay" style="color:var(--accent-amber)">60:00</span></div>
+                </div>
+
+                <button type="button" class="btn btn-secondary" id="logoutBtn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                  <span>Terminate Session (Logout)</span>
+                </button>
+              </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Cryptography & Lattice Inspector -->
+      <div class="inspector-container">
+        
+        <!-- Live System Telemetry -->
+        <div class="card">
+          <div class="card-header-styled">
+            <h3 class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-cyan)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+              Quantum Cryptography Inspector
+            </h3>
+            <span class="status-badge" style="background:rgba(0,240,255,0.1); color:var(--accent-cyan); border-color:var(--border-cyan)">ACTIVE INSPECTION</span>
+          </div>
+
+          <!-- Factor Status Matrix -->
+          <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:1rem; margin-bottom:1.5rem;">
+            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle)">
+              <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700">Factor 1: Bcrypt</div>
+              <div id="inspFactor1Status" style="font-size:0.82rem; font-weight:600; margin-top:0.3rem;">Awaiting input...</div>
+            </div>
+            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle)">
+              <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700">Factor 2: Wang-Wang</div>
+              <div id="inspFactor2Status" style="font-size:0.82rem; font-weight:600; margin-top:0.3rem;">Awaiting card tap...</div>
+            </div>
+            <div style="background:rgba(0,0,0,0.3); padding:0.85rem; border-radius:var(--radius-md); border:1px solid var(--border-subtle)">
+              <div style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:700">Factor 3: Ring-LWE</div>
+              <div id="inspFactor3Status" style="font-size:0.82rem; font-weight:600; margin-top:0.3rem;">Awaiting lattice...</div>
+            </div>
+          </div>
+
+          <!-- Cryptographic Parameters Table -->
+          <div style="margin-bottom:1.25rem;">
+            <h4 style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase; font-weight:700;">Active Post-Quantum Parameters</h4>
+            <div class="mono-box">
+Polynomial Ring:      R_q = Z_q[x] / (x^256 + 1)
+Cyclotomic Modulus q: 3329 (FIPS 203 / Kyber standard)
+Error Distribution:   Centered Binomial Distribution CBD(&eta;=2)
+Lattice Bound:        ||a*z - b*c||_&infin; &le; 550
+Fuzzy Verifier:       Wang-Wang Commitment V = HMAC(salt, C), W = C &oplus; S (tau = 2)
+SCAD Engine:          Sliding window 10s, auto-lock on 3 card failures
+Honey Tokens:         Active decoys armed (admin_root, CARD-HONEY-7777)
+            </div>
+          </div>
+
+          <!-- Derived Session Key Display -->
+          <div>
+            <h4 style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:0.5rem; text-transform:uppercase; font-weight:700;">Derived Post-Quantum Session Key K<sub>session</sub></h4>
+            <div class="mono-box" id="inspSessionKey" style="color:var(--accent-emerald); word-break:break-all;">
+              [Awaiting multi-factor authentication completion]
+            </div>
+          </div>
+        </div>
+
+        <!-- Real-time Security Event Stream -->
+        <div class="card">
+          <div class="card-header-styled">
+            <h3 class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+              Live Security Telemetry Feed
+            </h3>
+            <span style="font-size:0.75rem; color:var(--text-muted)">Real-time Audit Stream</span>
+          </div>
+
+          <div id="cryptoLogBox" class="mono-box" style="height:220px; overflow-y:auto;">
+            <!-- Real-time event log entries will be prepended here -->
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Registration Modal -->
+  <div id="registerModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:2000; align-items:center; justify-content:center;">
+    <div class="card" style="width:420px; max-width:90%;">
+      <div class="card-header-styled">
+        <h3 class="card-title">Provision New Quantum User</h3>
+        <button class="btn btn-secondary" onclick="document.getElementById('registerModal').style.display='none'" style="width:auto; padding:0.2rem 0.6rem;">&times;</button>
+      </div>
+
+      <div id="regAlert" style="display:none; margin-bottom:1rem;"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label class="form-label">Desired Username</label>
+          <input type="text" id="regUsername" class="form-control" placeholder="e.g. charlie" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Master Password (min 8 chars, mixed case, numbers)</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="••••••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <span>Provision Account & Smart Card</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="/static/js/nfc_simulator.js"></script>
+  <script src="/static/js/ring_lwe_client.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

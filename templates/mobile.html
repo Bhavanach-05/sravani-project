@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>QuantumShield Mobile 2FA</title>
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="theme-color" content="#080d1a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/css/animations.css">
+  <link rel="stylesheet" href="/static/css/mobile.css">
+</head>
+<body class="mobile-body">
+
+  <div class="mobile-app-wrapper">
+    
+    <!-- Mobile App Header -->
+    <div class="mobile-header">
+      <div class="mobile-brand">
+        <div class="mobile-brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#050811" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="mobile-brand-title">QUANTUM<span>SHIELD</span></div>
+      </div>
+      <div class="status-badge" style="font-size:0.7rem; padding:0.25rem 0.6rem;">
+        <span class="status-dot"></span>
+        <span>MOBILE PWA</span>
+      </div>
+    </div>
+
+    <!-- Web NFC Hardware Status Banner -->
+    <div class="nfc-status-banner" id="mobileNfcBanner">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+      <span id="mobileNfcStatusText">Checking NFC Antenna...</span>
+    </div>
+
+    <!-- 2FA Progress Stepper -->
+    <div class="step-stepper" style="margin-bottom:1.5rem;">
+      <div class="stepper-node active" id="mStepNode1">
+        <div class="stepper-circle">1</div>
+        <span class="stepper-label">Password</span>
+      </div>
+      <div class="stepper-node" id="mStepNode2">
+        <div class="stepper-circle">2</div>
+        <span class="stepper-label">NTAG215</span>
+      </div>
+      <div class="stepper-node" id="mStepNode3">
+        <div class="stepper-circle">3</div>
+        <span class="stepper-label">Ring-LWE</span>
+      </div>
+    </div>
+
+    <!-- STEP 1: PASSWORD / REGISTER -->
+    <div id="mStep1Panel" class="auth-panel">
+      <div class="auth-tabs" style="display:flex; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:4px; margin-bottom:1.25rem; gap:4px;">
+        <button type="button" class="auth-tab-btn active" id="tabBtnLogin" style="flex:1; background:var(--bg-card-hover, #1a2542); border:none; color:var(--accent-cyan); font-size:0.85rem; font-weight:700; padding:0.5rem; border-radius:var(--radius-sm); cursor:pointer;">
+          🔑 2FA Login
+        </button>
+        <button type="button" class="auth-tab-btn" id="tabBtnRegister" style="flex:1; background:none; border:none; color:var(--text-muted); font-size:0.85rem; font-weight:700; padding:0.5rem; border-radius:var(--radius-sm); cursor:pointer;">
+          ➕ Register NFC
+        </button>
+      </div>
+
+      <div id="subPanelLogin">
+        <div class="panel-header">
+          <h2 class="panel-title">Factor 1: Master Password</h2>
+          <p class="panel-subtitle">Enter enterprise account credentials to begin 2FA.</p>
+        </div>
+
+        <div id="mStep1Alert" class="status-badge status-danger" style="display:none; margin-bottom:1rem; width:100%;"></div>
+
+        <form id="mobilePasswordForm">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input type="text" id="mUsername" class="form-control" placeholder="e.g. alice" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="mPassword" class="form-control" placeholder="••••••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-mobile-large">
+            <span>Authenticate Factor 1</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </form>
+
+        <div style="margin-top:1.25rem; padding-top:1rem; border-top:1px solid var(--border-subtle); display:flex; flex-direction:column; gap:0.5rem;">
+          <button type="button" class="btn btn-secondary" id="mobileQuickAlice" style="font-size:0.8rem; padding:0.5rem;">
+            👤 Quick Auto-fill Alice
+          </button>
+        </div>
+      </div>
+
+      <div id="subPanelRegister" style="display:none;">
+        <div class="panel-header">
+          <h2 class="panel-title">Register &amp; Provision Card</h2>
+          <p class="panel-subtitle">Create account &amp; provision cryptographic smart card credentials.</p>
+        </div>
+
+        <div id="mRegAlert" class="status-badge status-danger" style="display:none; margin-bottom:1rem; width:100%;"></div>
+
+        <form id="mobileRegisterForm">
+          <div class="form-group">
+            <label class="form-label">Desired Username</label>
+            <input type="text" id="mRegUsername" class="form-control" placeholder="e.g. charlie" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Master Password (min 8 chars, mixed case, numbers)</label>
+            <input type="password" id="mRegPassword" class="form-control" placeholder="••••••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-mobile-large">
+            <span>Provision Account &amp; NFC Card</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+          </button>
+        </form>
+
+        <div id="mRegSuccessBox" style="display:none; margin-top:1.25rem; padding:1rem; background:rgba(16, 185, 129, 0.1); border:1px solid var(--accent-emerald); border-radius:var(--radius-md); text-align:center;">
+          <div style="font-weight:700; color:var(--accent-emerald); font-size:0.9rem; margin-bottom:0.4rem;">
+            ✓ Account Provisioned!
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-secondary); margin-bottom:1rem;">
+            Card UID: <span id="mRegCardUid" style="font-family:var(--font-mono); color:var(--accent-cyan); font-weight:700;"></span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:0.5rem;">
+            <button type="button" class="btn btn-primary" id="btnWriteNewCard" style="font-size:0.8rem; padding:0.6rem;">
+              💳 Program Blank Physical Card Now
+            </button>
+            <button type="button" class="btn btn-secondary" id="btnGoToLogin" style="font-size:0.8rem; padding:0.5rem;">
+              Proceed to Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 2: PHYSICAL NTAG215 NFC SCAN -->
+    <div id="mStep2Panel" class="auth-panel" style="display:none;">
+      <div class="panel-header">
+        <h2 class="panel-title">Factor 2: NTAG215 NFC</h2>
+        <p class="panel-subtitle">Hold your physical NTAG215 card against the back of this phone.</p>
+      </div>
+
+      <div id="mStep2Alert" class="status-badge status-danger" style="display:none; margin-bottom:1rem; width:100%;"></div>
+
+      <!-- NFC Radar Graphic -->
+      <div class="nfc-radar-pulse" id="nfcRadarGraphic">
+        <div class="nfc-radar-circle"></div>
+        <div class="nfc-radar-circle"></div>
+        <div class="nfc-radar-circle"></div>
+        <div class="nfc-icon-center">
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+        </div>
+      </div>
+
+      <div id="mNfcScanPrompt" style="display:none; text-align:center; font-size:0.85rem; font-weight:600; margin-bottom:1rem;"></div>
+
+      <div id="mScannedTagBadge" class="mobile-tag-scanned" style="display:none; margin-bottom:1rem;">
+        <span id="mScannedUidText" style="font-family:var(--font-mono); font-size:0.85rem; font-weight:700;"></span>
+        <span class="card-status-pill card-status-active">VERIFIED</span>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:0.75rem;">
+        <button type="button" class="btn btn-primary btn-mobile-large" id="btnScanNfc">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 8.32a7.43 7.43 0 0 1 0 7.36"/><path d="M9.46 6.21a11.76 11.76 0 0 1 0 11.58"/><path d="M12.91 4.1a15.91 15.91 0 0 1 0 15.8"/><path d="M16.37 2a20.16 20.16 0 0 1 0 20"/></svg>
+          <span>Scan Physical NTAG215 Card</span>
+        </button>
+
+        <button type="button" class="btn btn-secondary" id="btnWriteNfc" style="font-size:0.8rem; padding:0.6rem;">
+          💳 Program Blank NTAG215 Tag with Secret
+        </button>
+
+      </div>
+
+      <div style="margin-top:1rem; font-size:0.75rem; color:var(--text-muted); text-align:center;">
+        Registered Card UID: <span id="mRegisteredCardUid" style="font-family:var(--font-mono); color:var(--accent-cyan)">--</span>
+      </div>
+    </div>
+
+    <!-- STEP 3: RING-LWE POST-QUANTUM LAYER -->
+    <div id="mStep3Panel" class="auth-panel" style="display:none;">
+      <div class="panel-header">
+        <h2 class="panel-title">Factor 3: Post-Quantum</h2>
+        <p class="panel-subtitle">Ring-LWE challenge-response mod (x<sup>256</sup>+1, 3329).</p>
+      </div>
+
+      <div id="mStep3Alert" class="status-badge status-danger" style="display:none; margin-bottom:1rem; width:100%;"></div>
+
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.5rem;">
+        <span>Server Challenge Spectrum u(x):</span>
+        <div class="lattice-spectrum" id="mServerChallengeSpectrum"></div>
+      </div>
+
+      <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:1rem;">
+        <span>Client Response Spectrum v(x):</span>
+        <div class="lattice-spectrum" id="mClientResponseSpectrum"></div>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-mobile-large" id="btnMobileRlwe">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <span>Compute Post-Quantum Proof</span>
+      </button>
+    </div>
+
+    <!-- STEP 4: AUTHENTICATED SESSION -->
+    <div id="mSessionPanel" class="auth-panel" style="display:none; text-align:center; padding:2rem 1.25rem;">
+      <div style="width:64px; height:64px; background:rgba(16, 185, 129, 0.2); border:2px solid var(--accent-emerald); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; box-shadow:0 0 25px var(--accent-emerald-glow);">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent-emerald)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="panel-title" style="color:var(--accent-emerald); font-size:1.4rem;">Authenticated</h2>
+      <p class="panel-subtitle" style="margin-bottom:1.5rem">Physical NTAG215 + Ring-LWE Session Active</p>
+
+      <div style="background:rgba(0,0,0,0.5); border-radius:var(--radius-md); padding:1rem; text-align:left; font-size:0.8rem; font-family:var(--font-mono); line-height:1.8; margin-bottom:1.5rem;">
+        <div><strong>User:</strong> <span id="mSessionUser" style="color:var(--accent-cyan)">alice</span></div>
+        <div><strong>Physical Card:</strong> NTAG215 (Type 2)</div>
+        <div><strong>PQ Session Key:</strong> <span id="mSessionKeyHash" style="color:var(--accent-purple)">--</span></div>
+        <div><strong>Security:</strong> Quantum-Resistant</div>
+      </div>
+
+      <button type="button" class="btn btn-secondary btn-mobile-large" id="btnMobileLogout">
+        Terminate Session
+      </button>
+    </div>
+
+  </div>
+
+  <script src="/static/js/web_nfc.js"></script>
+  <script src="/static/js/ring_lwe_client.js"></script>
+  <script src="/static/js/mobile_app.js"></script>
+</body>
+</html>
